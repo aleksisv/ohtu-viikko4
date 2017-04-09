@@ -17,7 +17,15 @@ public class Stepdefs {
     
     WebDriver driver = new ChromeDriver();
     String baseUrl = "http://localhost:4567";
-
+    
+    
+    @Given("^new user is selected$")
+    public void user_selected() throws Throwable {
+        driver.get(baseUrl);
+        WebElement element = driver.findElement(By.linkText("register new user"));
+        element.click();
+    }
+    
     @Given("^login is selected$")
     public void login_selected() throws Throwable {
         driver.get(baseUrl);
@@ -39,6 +47,21 @@ public class Stepdefs {
     public void nonexistent_username_and_password_are_given(String username, String password) throws Throwable {
         logInWith(username, password);
     }
+    
+    @When("^username \"([^\"]*)\" and password \"([^\"]*)\" are given$")
+    public void username_and_password_are_given(String username, String password) throws Throwable {
+        WebElement element = driver.findElement(By.name("username"));
+        element.sendKeys(username);
+        element = driver.findElement(By.name("password"));
+        element.sendKeys(password);
+        element = driver.findElement(By.name("login"));
+        element.submit();
+    }
+    
+    @When("^username \"([^\"]*)\" and password \"([^\"]*)\" and confirmation \"([^\"]*)\" are given$")
+    public void username_and_password_and_confirmation_are_given(String arg1, String arg2, String arg3) throws Throwable {
+        createUserWith(arg1, arg2);
+    }
 
     @Then("^user is logged in$")
     public void user_is_logged_in() throws Throwable {
@@ -48,6 +71,36 @@ public class Stepdefs {
     @Then("^user is not logged in and error message is given$")
     public void user_is_not_logged_in_and_error_message_is_given() throws Throwable {
         pageHasContent("invalid username or password");
+    }
+    
+    @Then("^user is registered$")
+    public void user_is_registered() throws Throwable {
+        pageHasContent("Welcome to Ohtu Application!");
+    }
+    
+    @Then("^user is not created and error \"username should have at least 3 characters\" is reported$")
+    public void not_created() throws Throwable {
+        pageHasContent("username should have at least 3 characters");
+    }
+    
+    @Then("^user is not created and error \"password should have at least 8 characters\" is reported$")
+    public void not_created_password() throws Throwable {
+        pageHasContent("password should have at least 8 characters");
+    }
+    
+    @Then("^user is not created and error \"password and password confirmation do not match\" is reported$")
+    public void user_is_not_created_password_match() throws Throwable {
+        pageHasContent("password and password confirmation do not match");
+    }
+    
+    @Then("^user is not created and error \"password can not contain only letters\" is reported$")
+    public void user_is_not_created_and_password_letters() throws Throwable {
+        pageHasContent("password can not contain only letters");
+    }
+    
+    @Then("^user is not created and error \"username is already taken\" is reported$")
+    public void user_is_not_created_and_username_is_taken_error() throws Throwable {
+        pageHasContent("username is already taken");
     }
     
     
@@ -68,6 +121,17 @@ public class Stepdefs {
         element = driver.findElement(By.name("password"));
         element.sendKeys(password);
         element = driver.findElement(By.name("login"));
+        element.submit();
+    }
+
+    private void createUserWith(String username, String password) {
+        WebElement element = driver.findElement(By.name("username"));
+        element.sendKeys(username);
+        element = driver.findElement(By.name("password"));
+        element.sendKeys(password);
+        element = driver.findElement(By.name("passwordConfirmation"));
+        element.sendKeys(password);
+        element = driver.findElement(By.name("signup"));
         element.submit();
     }
 }

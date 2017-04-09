@@ -23,21 +23,40 @@ public class AuthenticationService {
         return false;
     }
 
-    public CreationStatus createUser(String username, String password, String passwordConfirmation) {
+    public CreationStatus createUser(String username, String password, String conf) {
         CreationStatus status = new CreationStatus();
-        
+
         if (userDao.findByName(username) != null) {
             status.addError("username is already taken");
         }
 
-        if (username.length()<3 ) {
+        if (username.length() < 3) {
             status.addError("username should have at least 3 characters");
+        }
+
+        if (password.length() < 8) {
+            status.addError("password should have at least 8 characters");
+        }
+        
+        if (!password.equals(conf)) {
+            status.addError("password and password confirmation do not match");
+        }
+
+        int count = 0;
+        for (int i = 0; i < password.length(); i++) {
+            if (!Character.isLetter(password.charAt(i))) {
+                count++;
+            }
+        }
+        
+        if (count<1) {
+            status.addError("password can not contain only letters");
         }
 
         if (status.isOk()) {
             userDao.add(new User(username, password));
         }
-        
+
         return status;
     }
 
