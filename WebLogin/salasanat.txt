@@ -1,2 +1,4 @@
 pekka;akkep
 jukka;akkuj
+alluu;al
+allu;al
